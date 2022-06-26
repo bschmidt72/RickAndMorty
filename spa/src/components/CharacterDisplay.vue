@@ -1,18 +1,20 @@
 ﻿<template>
   <div v-if="character" class="character-page">
-    <h2>{{props.character?.name}}</h2>
-    <h5>Location: {{props.character?.location?.name}}</h5>
-    <h5>Status: {{props.character?.status}}</h5>
-    <img class="character-image" v-bind:alt="props.character?.name" v-bind:src="props.character?.image"/>
+    <h2>{{ props.character?.name }}</h2>
+    <h5>Location: {{ props.character?.location?.name }}</h5>
+    <h5>Status: {{ props.character?.status }}</h5>
+    <img
+      class="character-image"
+      v-bind:alt="props.character?.name"
+      v-bind:src="props.character?.image"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-
-import type {Character} from "@/model/Character";
+import type { Character } from "@/model/Character";
 
 const props = defineProps<{ character: Character | null }>();
-
 </script>
 
 <style scoped>

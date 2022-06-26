@@ -1,7 +1,7 @@
-﻿import type {ResponseInfo} from "@/model/ResponseInfo";
-import type {CharacterInfo} from "@/model/CharacterInfo";
+﻿import type { ResponseInfo } from "@/model/ResponseInfo";
+import type { CharacterInfo } from "@/model/CharacterInfo";
 
 export interface CharacterResponse {
-    info: ResponseInfo,
-    results: CharacterInfo[]
+  info: ResponseInfo;
+  results: CharacterInfo[];
 }

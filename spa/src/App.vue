@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
   <div class="page">
     <div class="header">
-      <img class="logo" src="./logo.png" alt="Rick and Morty"/>
+      <img class="logo" src="./logo.png" alt="Rick and Morty" />
       <h3>Character Search</h3>
     </div>
     <div class="divider"></div>
@@ -60,7 +60,12 @@ p {
   margin: 0 0 2em 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #ffffff;
   font-weight: bold;
   line-height: 1.5;
@@ -87,7 +92,8 @@ h5 {
   font-size: 0.8em;
 }
 
-ol, ul {
+ol,
+ul {
   list-style: none;
 }
 
@@ -118,21 +124,24 @@ nav a:first-of-type {
 
 .styled-scrollbars {
   /* Foreground, Background */
-  scrollbar-color: white #b74e91;;
+  scrollbar-color: white #b74e91;
 }
 .styled-scrollbars::-webkit-scrollbar {
   width: 10px; /* Mostly for vertical scrollbars */
   height: 10px; /* Mostly for horizontal scrollbars */
 }
-.styled-scrollbars::-webkit-scrollbar-thumb { /* Foreground */
+.styled-scrollbars::-webkit-scrollbar-thumb {
+  /* Foreground */
   background: white;
 }
-.styled-scrollbars::-webkit-scrollbar-track { /* Background */
+.styled-scrollbars::-webkit-scrollbar-track {
+  /* Background */
   background: #b74e91;
 }
 
 @media screen and (max-width: 800px) {
-  html, body {
+  html,
+  body {
     min-width: 100vw;
     font-size: 11pt;
     font-weight: normal;

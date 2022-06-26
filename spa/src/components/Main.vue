@@ -2,41 +2,52 @@
   <div class="container">
     <section id="sidebar">
       <div class="inner">
-        <CharacterSearch @characterSelected="loadCharacter" @searchResults="displayResults"/>
+        <CharacterSearch
+          @characterSelected="loadCharacter"
+          @searchResults="displayResults"
+        />
       </div>
     </section>
     <div v-if="selectedCharacter" class="wrapper">
-      <CharacterDisplay :character="selectedCharacter"/>
+      <CharacterDisplay :character="selectedCharacter" />
     </div>
     <div v-if="searchResults" class="wrapper">
       <div>
         <h3>Search Results</h3>
         <ul class="styled-scrollbars">
-          <li v-for="character of searchResults" @click="loadCharacter(character)">{{character.name}}</li>
+          <li
+            v-for="character of searchResults"
+            v-bind:key="character.id"
+            @click="loadCharacter(character)"
+          >
+            {{ character.name }}
+          </li>
         </ul>
       </div>
     </div>
     <div v-if="!selectedCharacter && !searchResults" class="wrapper">
-     <p>Please search for a character</p> 
+      <p>Please search for a character</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import type {Ref} from "vue";
+import { ref } from "vue";
+import type { Ref } from "vue";
 import { RickAndMortyService } from "@/services/RickAndMortyService";
-import type {Character} from "@/model/Character";
+import type { Character } from "@/model/Character";
 import CharacterSearch from "@/components/CharacterSearch.vue";
 import CharacterDisplay from "@/components/CharacterDisplay.vue";
-import type {CharacterInfo} from "@/model/CharacterInfo";
+import type { CharacterInfo } from "@/model/CharacterInfo";
 
 const service = new RickAndMortyService();
 const selectedCharacter: Ref<Character | null> = ref(null);
 const searchResults: Ref<CharacterInfo[] | null> = ref(null);
 
 function loadCharacter(characterInfo: CharacterInfo) {
-  service.getCharacter(characterInfo.id).then(result => selectedCharacter.value = result);
+  service
+    .getCharacter(characterInfo.id)
+    .then((result) => (selectedCharacter.value = result));
   searchResults.value = null;
 }
 
@@ -58,7 +69,7 @@ function displayResults(results: CharacterInfo[]) {
   display: flex;
   flex-direction: column;
   flex: 1 1 25%;
-  padding: 2.5em 2.5em 0.5em 2.5em ;
+  padding: 2.5em 2.5em 0.5em 2.5em;
   background: #312450;
   cursor: default;
   min-height: 100vh;
@@ -91,7 +102,7 @@ function displayResults(results: CharacterInfo[]) {
   max-width: 100%;
 }
 
-::placeholder { 
+::placeholder {
   color: red;
   opacity: 1; /* Firefox */
 }
@@ -135,7 +146,7 @@ li:hover {
     overflow-y: auto;
     min-width: auto;
     z-index: 10000;
-    padding: 0.5em 0.5em 1.5em 0.5em ;
+    padding: 0.5em 0.5em 1.5em 0.5em;
   }
   .wrapper {
     display: flex;
@@ -154,6 +165,5 @@ li:hover {
     overflow-y: auto;
     border: solid 1px #b74e91;
   }
-
 }
 </style>

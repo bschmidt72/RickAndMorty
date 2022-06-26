@@ -1,4 +1,4 @@
 ﻿export interface Location {
-    name: string,
-    location: string
+  name: string;
+  location: string;
 }

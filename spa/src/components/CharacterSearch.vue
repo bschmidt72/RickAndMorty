@@ -1,38 +1,58 @@
 ﻿<template>
-<div class="search-container" v-on:mouseover="mouseOver = true" v-on:mouseleave="mouseOver = false">
-  <h5>Search a character</h5>
-  <input name="search" placeholder="Search" v-model="searchInput" autocomplete="off" v-on:keyup.enter="sendResults()">
-    <ul v-if="suggestions?.length > 0 && suggestionsOpen" class="suggestions styled-scrollbars">
-      <li v-for="suggestion of suggestions" class="suggestion" @click="select(suggestion)">{{suggestion.name}}</li>
+  <div
+    class="search-container"
+    v-on:mouseover="mouseOver = true"
+    v-on:mouseleave="mouseOver = false"
+  >
+    <h5>Search a character</h5>
+    <input
+      name="search"
+      placeholder="Search"
+      v-model="searchInput"
+      autocomplete="off"
+      v-on:keyup.enter="sendResults()"
+    />
+    <ul
+      v-if="suggestions?.length > 0 && suggestionsOpen"
+      class="suggestions styled-scrollbars"
+    >
+      <li
+        v-for="suggestion of suggestions"
+        v-bind:key="suggestion.id"
+        class="suggestion"
+        @click="select(suggestion)"
+      >
+        <span>{{ suggestion.name }}</span>
+      </li>
     </ul>
-</div> 
+  </div>
 </template>
 
 <script setup lang="ts">
-import {onMounted, onBeforeUnmount, ref, watch} from "vue";
-import type {Ref} from 'vue';
-import type {CharacterInfo} from "@/model/CharacterInfo";
-import {RickAndMortyService} from "@/services/RickAndMortyService";
+import { onMounted, onBeforeUnmount, ref, watch } from "vue";
+import type { Ref } from "vue";
+import type { CharacterInfo } from "@/model/CharacterInfo";
+import { RickAndMortyService } from "@/services/RickAndMortyService";
 
 const emit = defineEmits<{
-  (e: 'characterSelected', character: CharacterInfo): void,
-  (e: 'searchResults', searchResults: CharacterInfo[]): void
-}>()
+  (e: "characterSelected", character: CharacterInfo): void;
+  (e: "searchResults", searchResults: CharacterInfo[]): void;
+}>();
 
 const service = new RickAndMortyService();
-const searchInput = ref('');
+const searchInput = ref("");
 const suggestions = ref([] as CharacterInfo[]);
 const selected: Ref<CharacterInfo | null> = ref(null);
 const abortQuery: Ref<AbortController | null> = ref(null);
 const suggestionsOpen = ref(false);
 const mouseOver = ref(false);
 
-onMounted( () => {
-  setTimeout(() => document.addEventListener('click', hide));
+onMounted(() => {
+  setTimeout(() => document.addEventListener("click", hide));
 });
-onBeforeUnmount(() => document.removeEventListener('click', hide));
+onBeforeUnmount(() => document.removeEventListener("click", hide));
 
-watch(searchInput, async (newInput, oldInput) => {
+watch(searchInput, async (newInput) => {
   if (newInput === selected.value?.name) {
     return;
   }
@@ -41,7 +61,7 @@ watch(searchInput, async (newInput, oldInput) => {
     return;
   }
   query(newInput);
-})
+});
 
 function hide() {
   suggestionsOpen.value = false;
@@ -49,32 +69,29 @@ function hide() {
 
 function query(search: string) {
   abortQuery.value?.abort();
-  let controller = new AbortController();
+  const controller = new AbortController();
   abortQuery.value = controller;
-  service.queryCharacterNames(search, controller)
-      .then(result => {
-        suggestions.value = result;
-        suggestionsOpen.value = true
-      });
+  service.queryCharacterNames(search, controller).then((result) => {
+    suggestions.value = result;
+    suggestionsOpen.value = true;
+  });
 }
 
 function select(characterInfo: CharacterInfo) {
   selected.value = characterInfo;
   searchInput.value = characterInfo.name;
-  suggestions.value = [ characterInfo ];
+  suggestions.value = [characterInfo];
   suggestionsOpen.value = false;
-  emit('characterSelected', characterInfo)
+  emit("characterSelected", characterInfo);
 }
 
 function sendResults() {
   suggestionsOpen.value = false;
-  emit('searchResults', suggestions.value);
+  emit("searchResults", suggestions.value);
 }
-
 </script>
 
 <style scoped>
-
 .search-container {
   display: flex;
   flex: 1 1 auto;
