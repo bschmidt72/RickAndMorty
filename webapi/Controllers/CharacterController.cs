@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using webapi.Helper;
+using webapi.Model;
 using webapi.Services;
 
 namespace webapi.Controllers
@@ -27,7 +28,7 @@ namespace webapi.Controllers
         /// <param name="page">Requested Page</param>
         /// <returns></returns>
         [HttpGet]
-        public JObject Get(string name, int? page)
+        public CharacterResponse Get(string name, int? page)
         {
             return name == null 
                 ? _characterService.GetAllCharacters(page) 
@@ -40,7 +41,7 @@ namespace webapi.Controllers
         /// <param name="id">Character Id</param> 
         /// <returns></returns>
         [HttpGet("{id:int}")]
-        public JObject GetById(int id)
+        public Character GetById(int id)
         {
             return _characterService.GetCharacter(id);
         }

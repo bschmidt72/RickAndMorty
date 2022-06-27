@@ -1,6 +1,8 @@
-﻿export interface Character {
+﻿import type { CharacterLocation } from "@/model/Location";
+
+export interface Character {
   name: string;
   status: string;
   image: string;
-  location: Location;
+  location: CharacterLocation;
 }

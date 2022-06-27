@@ -13,7 +13,7 @@ export class SanitizerBuilder {
   private static readonly CHAR_CODE_SPACE: number = 32;
 
   private ranges: CharRange[] = [];
-  
+
   constructor() {}
 
   public keepRange(

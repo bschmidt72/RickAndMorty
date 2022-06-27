@@ -1,12 +1,14 @@
-﻿using System.Net.Http;
+﻿using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using webapi.Cache;
 using webapi.Helper;
+using webapi.Model;
 
 namespace webapi.Services
 {
@@ -19,8 +21,8 @@ namespace webapi.Services
         private readonly ILogger<CharacterApiService> _logger;
         private readonly string _baseUrl;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ICache<JObject> _characterCache;
-        private readonly ICache<JObject> _queryCache;
+        private readonly ICache<Character> _characterCache;
+        private readonly ICache<CharacterResponse> _queryCache;
         private readonly bool _useCache;
         public CharacterApiService(ILogger<CharacterApiService> logger, IConfiguration config,
             IHttpContextAccessor httpContextAccessor) 
@@ -30,13 +32,13 @@ namespace webapi.Services
             _baseUrl = config.GetValue<string>("RickAndMortyApi");
             if (_useCache)
             {
-                _characterCache = new LfuCache<JObject>(200);
-                _queryCache = new LruCache<JObject>(100);
+                _characterCache = new LfuCache<Character>(200);
+                _queryCache = new LruCache<CharacterResponse>(100);
             }
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public JObject GetAllCharacters(int? page)
+        public CharacterResponse GetAllCharacters(int? page)
         {
             var builder = new StringBuilder();
             const string relativePath = "/character/";
@@ -48,11 +50,12 @@ namespace webapi.Services
             }
 
             var response = GetJsonResponseFromHttp(builder.ToString());
-            UpdateResponseLinks(response, relativePath, page);
-            return response;
+            var characterResponse = JsonConvert.DeserializeObject<CharacterResponse>(response);
+            UpdateResponseLinks(characterResponse, relativePath, page);
+            return characterResponse;
         }
 
-        public JObject GetCharacter(int id)
+        public Character GetCharacter(int id)
         {
             if (_useCache)
             {
@@ -62,7 +65,8 @@ namespace webapi.Services
                     return cached;
                 }
             }
-            var character = GetJsonResponseFromHttp($"{_baseUrl}/character/{id}");
+            var characterJson = GetJsonResponseFromHttp($"{_baseUrl}/character/{id}");
+            var character = JsonConvert.DeserializeObject<Character>(characterJson);
             if (_useCache)
             {
                 _characterCache.Add(id, character);
@@ -71,7 +75,7 @@ namespace webapi.Services
             return character;
         }
 
-        public JObject QueryCharacters(string query, int? page)
+        public CharacterResponse QueryCharacters(string query, int? page)
         {
             var sanitized = HttpUtility.UrlEncode(Sanitizer.CleanString(query));
             var builder = new StringBuilder();
@@ -92,7 +96,8 @@ namespace webapi.Services
                     return cached;
                 }
             }
-            var response = GetJsonResponseFromHttp(url);
+            var responseJson = GetJsonResponseFromHttp(url);
+            var response = JsonConvert.DeserializeObject<CharacterResponse>(responseJson);
             UpdateResponseLinks(response, relativePath, page);
             if (_useCache)
             {
@@ -101,40 +106,30 @@ namespace webapi.Services
             return response;
         }
         
-        public JArray FetchCharactersRecursively(string url)
+        public List<Character> FetchCharactersRecursively()
         {
-            var allCharacters = new JArray();
+            var allCharacters = new List<Character>();
+            var url = $"{_baseUrl}/character/";
             while (url != null)
             {
-                var result = GetJsonResponseFromHttp(url);
-                if (result == null)
+                var resultJson = GetJsonResponseFromHttp(url);
+                if (resultJson == null)
                 {
                     break;
                 }
 
-                var characters = GetCharactersFromResult(result);
-                foreach (var character in characters.Children<JObject>())
+                var result = JsonConvert.DeserializeObject<CharacterResponse>(resultJson);
+                if (result != null)
                 {
-                    allCharacters.Add(character);
+                    allCharacters.AddRange(result.Results);
                 }
-
-                url = GetNextUrlFromResult(result);
+                url = result?.Info?.Next;
             }
 
             return allCharacters;
         }
-        
-        private string GetNextUrlFromResult(JObject result)
-        {
-            return (string) result["info"]["next"];
-        }
 
-        private JArray GetCharactersFromResult(JObject result)
-        {
-            return (JArray) result["results"];
-        }
-        
-        private JObject GetJsonResponseFromHttp(string url)
+        private string GetJsonResponseFromHttp(string url)
         {
             using var httpClient = new HttpClient();
             var result = httpClient.GetAsync(url);
@@ -143,7 +138,7 @@ namespace webapi.Services
 
             if (respMessage.IsSuccessStatusCode)
             {
-                return JObject.Parse(jsonResponse);
+                return jsonResponse;
             }
             _logger.LogError($"[{respMessage.StatusCode}] [{jsonResponse}]");
             return null;
@@ -152,7 +147,7 @@ namespace webapi.Services
         /// <summary>
         /// modifies the character response to fit the new api
         /// </summary>
-        private void UpdateResponseLinks(JObject response, string relativePath, int? currentPage)
+        private void UpdateResponseLinks(CharacterResponse characterResponse, string relativePath, int? currentPage)
         {
             if (_httpContextAccessor.HttpContext == null)
             {
@@ -167,16 +162,16 @@ namespace webapi.Services
             var scheme = request.Scheme;
             var baseUrl = $"{scheme}://{host}/{pathBase}api{relativePath}";
             // for the sake of simplicity we're only updating the info part and leave all the other hosting on rickandmortyapi.com
-            var next = (string) response["info"]?["next"];
+            var next = characterResponse.Info.Next;
             if (next != null)
             {
-                response["info"]["next"] = $"{baseUrl}{queryParamSeparator}page={currentPage + 1}";
+                characterResponse.Info.Next = $"{baseUrl}{queryParamSeparator}page={currentPage + 1}";
             }
 
-            var prev = (string) response["info"]?["prev"];
+            var prev = characterResponse.Info.Prev;
             if (prev != null)
             {
-                response["info"]["prev"] = $"{baseUrl}{queryParamSeparator}page={currentPage - 1}";
+                characterResponse.Info.Prev = $"{baseUrl}{queryParamSeparator}page={currentPage - 1}";
             }
         }
         

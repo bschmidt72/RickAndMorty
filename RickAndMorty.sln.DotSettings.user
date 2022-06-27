@@ -1,10 +1,7 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=209d66a5_002De994_002D4764_002D9fba_002D48e374447a4d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestGetAll" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest.TestGetAllPage1&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest.TestGetAllPage23&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest.TestQueryRickPage1&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest.TestQueryRickPage3&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest.TestGetCharacter555&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterApiServiceTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::CFA6B0B0-8647-4BEB-8772-31619F91E669::net6.0::webapiTest.Services.CharacterDbServiceTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

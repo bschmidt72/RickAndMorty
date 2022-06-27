@@ -5,17 +5,14 @@ using Moq;
 using webapi.Services;
 using Xunit;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace webapiTest.Services
 {
-    public class CharacterApiServiceTest
+    public class CharacterDbServiceTest
     {
-        
-        private CharacterApiService SetupService()
+        private IHttpContextAccessor SetupHttContextAccessorMock()
         {
-            var loggerMock = new Mock<ILogger<CharacterApiService>>();
-            var logger = loggerMock.Object;
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.test.json", false, true);
-            IConfiguration configuration = builder.Build();
             var request = new Mock<HttpRequest>();
             request.SetupGet(x => x.Scheme).Returns("https");
             request.SetupGet(x => x.Host).Returns(new HostString("localhost", 5001));
@@ -24,14 +21,32 @@ namespace webapiTest.Services
             context.SetupGet(x => x.Request).Returns(request.Object);
             var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(context.Object);
-            var httpContextAccessor = httpContextAccessorMock.Object;
-            return new CharacterApiService(logger, configuration, httpContextAccessor);
+            return httpContextAccessorMock.Object;
+        }
+
+        private IConfiguration SetupConfiguration()
+        {
+            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.test.json", false, true);
+            return builder.Build();
+        }
+        
+        private CharacterDbService SetupService()
+        {
+            return new CharacterDbService(SetupApiService(), SetupConfiguration(), SetupHttContextAccessorMock());
+        }
+
+        private CharacterApiService SetupApiService()
+        {
+            var loggerMock = new Mock<ILogger<CharacterApiService>>();
+            var logger = loggerMock.Object;
+            
+            return new CharacterApiService(logger, SetupConfiguration(), SetupHttContextAccessorMock());
         }
 
         [Fact]
         public void TestGetAllPage1()
         {
-            var service = SetupService();
+            using var service = SetupService();
             var result = service.GetAllCharacters(null);
             Assert.NotNull(result);
             Assert.NotNull(result.Info);
@@ -48,7 +63,7 @@ namespace webapiTest.Services
         [Fact]
         public void TestGetAllPage23()
         {
-            var service = SetupService();
+            using var service = SetupService();
             var result = service.GetAllCharacters(23);
             Assert.NotNull(result);
             Assert.NotNull(result.Info);
@@ -65,7 +80,7 @@ namespace webapiTest.Services
         [Fact]
         public void TestQueryRickPage1()
         {
-            var service = SetupService();
+            using var service = SetupService();
             var query = "Rick";
             var result = service.QueryCharacters(query, null);
             Assert.NotNull(result);
@@ -83,7 +98,7 @@ namespace webapiTest.Services
         [Fact]
         public void TestQueryRickPage3()
         {
-            var service = SetupService();
+            using var service = SetupService();
             var query = "Rick";
             var result = service.QueryCharacters(query, 3);
             Assert.NotNull(result);
@@ -95,13 +110,13 @@ namespace webapiTest.Services
             var results = result.Results;
             Assert.NotNull(results);
             Assert.Equal(20, results?.Count);
-            Assert.Equal("Toxic Rick", results?[7].Name);
+            Assert.Equal("Unknown Rick", results?[7].Name);
         }
 
         [Fact]
         public void TestGetCharacter555()
         {
-            var service = SetupService();
+            using var service = SetupService();
             var result = service.GetCharacter(555);
             Assert.Equal("Randotron", result.Name);
             Assert.Equal(555, (int?)result.Id);

@@ -28,10 +28,21 @@ namespace webapi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            
             services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<CharacterApiService>();
-            services.AddSingleton<ICharacterService>(x => x.GetRequiredService<CharacterApiService>());
+            services.AddSingleton<CharacterDbService>();
+
+            var useDb = Configuration.GetValue<bool>("UseDb");
+            if (useDb)
+            {
+                services.AddSingleton<ICharacterService>(x => x.GetRequiredService<CharacterDbService>());
+            }
+            else
+            {
+                services.AddSingleton<ICharacterService>(x => x.GetRequiredService<CharacterApiService>());
+            }
+            
             services.AddHttpContextAccessor();
             services.AddCors(options => options.AddPolicy("CorsPolicy",
                 builder =>
@@ -50,7 +61,7 @@ namespace webapi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, CharacterDbService characterApiService)
         {
             if (env.IsDevelopment())
             {

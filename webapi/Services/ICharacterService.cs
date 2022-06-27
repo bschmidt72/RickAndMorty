@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using webapi.Model;
 
 namespace webapi.Services
 {
     public interface ICharacterService
     {
-        JObject GetAllCharacters(int? page);
+        CharacterResponse GetAllCharacters(int? page);
 
-        JObject QueryCharacters(string query, int? page);
+        CharacterResponse QueryCharacters(string query, int? page);
 
-        JObject GetCharacter(int id);
+        Character GetCharacter(int id);
     }
 }
