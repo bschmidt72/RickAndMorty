@@ -28,11 +28,11 @@ namespace webapi.Controllers
         /// <param name="page">Requested Page</param>
         /// <returns></returns>
         [HttpGet]
-        public CharacterResponse Get(string name, int? page)
+        public ActionResult<CharacterResponse> Get(string name, int? page)
         {
             return name == null 
-                ? _characterService.GetAllCharacters(page) 
-                : _characterService.QueryCharacters(Sanitizer.CleanString(name), page);
+                ? Ok(_characterService.GetAllCharacters(page)) 
+                : Ok(_characterService.QueryCharacters(Sanitizer.CleanString(name), page));
         }
 
         /// <summary>
@@ -41,9 +41,15 @@ namespace webapi.Controllers
         /// <param name="id">Character Id</param> 
         /// <returns></returns>
         [HttpGet("{id:int}")]
-        public Character GetById(int id)
+        public ActionResult<Character> GetById(int id)
         {
-            return _characterService.GetCharacter(id);
+            var character = _characterService.GetCharacter(id);
+            if (character == null)
+            {
+                return NotFound("Character not found");
+            }
+
+            return Ok(character);
         }
 
     }
