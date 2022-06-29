@@ -16,9 +16,10 @@
         <h3>Search Results</h3>
         <ul class="styled-scrollbars">
           <li
-            v-for="character of searchResults"
-            v-bind:key="character.id"
-            @click="loadCharacter(character)"
+              class="search-result"
+              v-for="character of searchResults"
+              v-bind:key="character.id"
+              @click="loadCharacter(character)"
           >
             {{ character.name }}
           </li>

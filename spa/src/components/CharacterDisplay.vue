@@ -1,8 +1,8 @@
 ﻿<template>
   <div v-if="character" class="character-page">
-    <h2>{{ props.character?.name }}</h2>
-    <h5>Location: {{ props.character?.location?.name }}</h5>
-    <h5>Status: {{ props.character?.status }}</h5>
+    <h2 id="character-name">{{ props.character?.name }}</h2>
+    <h5 id="character-location">Location: {{ props.character?.location?.name }}</h5>
+    <h5 id="character-status">Status: {{ props.character?.status }}</h5>
     <img
       class="character-image"
       v-bind:alt="props.character?.name"

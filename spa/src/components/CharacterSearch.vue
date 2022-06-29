@@ -5,12 +5,13 @@
     v-on:mouseleave="mouseOver = false"
   >
     <h5>Search a character</h5>
-    <input
-      name="search"
-      placeholder="Search"
-      v-model="searchInput"
-      autocomplete="off"
-      v-on:keyup.enter="sendResults()"
+    <input 
+        id="search-box"
+        name="search"
+        placeholder="Search"
+        v-model="searchInput"
+        autocomplete="off"
+        v-on:keyup.enter="sendResults()"
     />
     <ul
       v-if="suggestions?.length > 0 && suggestionsOpen"
