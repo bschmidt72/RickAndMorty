@@ -1,4 +1,4 @@
-﻿let expectedResults = [
+﻿const expectedResults = [
     '26 Years Old Morty',
     'Jerry 5-126',
     'Morty K-22',
@@ -52,7 +52,6 @@ describe('Rick and Morty E2E Tests', () => {
             .type('{enter}')
         cy.get('.search-result', { timeout: 10000 }).should('be.visible');
         cy.get('.search-result').each((element, index, list) => {
-            console.log(element.text());
             expect(element.text()).to.be.equal(expectedResults[index]);
         });
         cy.get('.search-result').eq(2).click();
